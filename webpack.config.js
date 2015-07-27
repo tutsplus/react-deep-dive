@@ -3,7 +3,7 @@ var path = require('path'),
 
 module.exports = {
     entry: {
-        app: ['./src/app.js']
+        app: ['./src/app.jsx']
     },
     output: {
         path: './build',
@@ -13,6 +13,10 @@ module.exports = {
     module: {
         loaders: [
             {
+                test: /\.css$/,
+                loader: 'style!' + 'css?sourceMap'
+            },
+            {
                 test: /\.scss$/,
                 loader: 'style!' + 'css?sourceMap' + '!sass?sourceMap'
             },
@@ -20,7 +24,18 @@ module.exports = {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader?optional[]=runtime'
-            }
+            },
+            {
+                test: /\.(json)$/,
+                exclude: /node_modules/,
+                loader: 'json-loader'
+            },
+
+            {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=application/font-woff"},
+            {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=application/octet-stream"},
+            {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file"},
+            {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=image/svg+xml"}
+
         ]
     },
 
