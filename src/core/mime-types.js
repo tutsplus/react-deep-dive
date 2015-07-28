@@ -1,4 +1,23 @@
 var types = {
+    json: {
+        label: 'XHR',
+        mime: [
+            'application/json'
+        ]
+    },
+    js: {
+        label: 'Script',
+        mime: [
+            'application/javascript',
+            'text/javascript'
+        ]
+    },
+    css: {
+        label: 'Style',
+        mime: [
+            'text/css'
+        ]
+    },
     image: {
         label: 'Image',
         mime: [
@@ -10,31 +29,6 @@ var types = {
             'image/svg+xml'
         ]
     },
-    json: {
-        label: 'XHR',
-        mime: [
-            'application/json'
-        ]
-    },
-    html: {
-        label: 'Document',
-        mime: [
-            'text/html'
-        ]
-    },
-    js: {
-        label: 'Script',
-        mime: [
-            'application/javascript',
-            'text/javascript'
-        ]
-    },
-    css: {
-        label: 'Stylesheet',
-        mime: [
-            'text/css'
-        ]
-    },
     font: {
         label: 'Font',
         mime: [
@@ -42,6 +36,12 @@ var types = {
             'application/font-ttf',
             'application/vnd.ms-fontobject',
             'application/font-otf'
+        ]
+    },
+    html: {
+        label: 'Document',
+        mime: [
+            'text/html'
         ]
     },
     other: {
