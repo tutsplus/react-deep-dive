@@ -1,22 +1,11 @@
 import mimeTypes from './mime-types.js';
 
-export class Page {
-    constructor(harPage) {
-        "use strict";
-
-        this.id = harPage.id;
-        this.startedDateTime = harPage.startedDateTime;
-        this.pageTimings = _.clone(harPage.pageTimings);
-        this.entries = [];
-    }
-}
-
-export class Entry {
+export default class Entry {
 
     constructor(harEntry, page) {
         "use strict";
 
-        this.startTime = new Date(harEntry.startedDateTime) - new Date(page.startedDateTime);
+        var startTime = new Date(harEntry.startedDateTime) - new Date(page.startedDateTime);
 
         // Destructuring to the rescue
         var {
@@ -24,16 +13,18 @@ export class Entry {
             request: {url, method},
             response: {
                 content: {size, mimeType}
-                }
+                },
+            timings
             } = harEntry;
 
         this.request = { url: url, method: method };
-        this.time = time;
+        this.time = {
+            start: startTime,
+            total: time,
+            details: timings
+        };
         this.size = size;
         this.type = mimeTypes.identify(mimeType);
 
     }
 }
-
-
-

@@ -1,8 +1,11 @@
 require('fixed-data-table/dist/fixed-data-table.css');
+require('./_har-entry-list.scss');
 
 import _ from 'lodash';
 import React from 'react';
 import FixedDataTable from 'fixed-data-table';
+import TimeBar from '../timebar/TimeBar.jsx';
+import FileType from '../file-type/FileType.jsx';
 
 const Table = FixedDataTable.Table;
 const Column = FixedDataTable.Column;
@@ -17,13 +20,13 @@ export default class HarEntryList extends React.Component {
         this.state = {
             columnWidths: {
                 url: 500,
-                type: 100,
-                size: 100
+                size: 100,
+                time: 200
             },
             sortDirection: {
                 url: null,
-                type: null,
-                size: null
+                size: null,
+                time: null
             },
             tableWidth: 1000,
             isColumnResizing: false
@@ -42,21 +45,25 @@ export default class HarEntryList extends React.Component {
                    isColumnResizing={this.state.isColumnResizing}
                    onColumnResizeEndCallback={this._onColumnResized.bind(this)}>
                 <Column dataKey="url"
+                        cellRenderer={this._renderUrlColumn.bind(this)}
                         headerRenderer={this._renderHeader.bind(this)}
                         cellDataGetter={this._readKey.bind(this)}
                         width={this.state.columnWidths.url}
                         label="Url"
                         isResizable={true}
                         flexGrow={null}/>
-                <Column dataKey="type"
-                        headerRenderer={this._renderHeader.bind(this)}
-                        width={this.state.columnWidths.type}
-                        label="Type"
-                        isResizable={true}/>
                 <Column dataKey="size"
                         headerRenderer={this._renderHeader.bind(this)}
                         width={this.state.columnWidths.size}
+                        minWidth={200}
                         label="Size"
+                        isResizable={true}/>
+                <Column dataKey="time"
+                        headerRenderer={this._renderHeader.bind(this)}
+                        cellRenderer={this._renderTimeColumn.bind(this)}
+                        width={this.state.columnWidths.time}
+                        minWidth={200}
+                        label="Timeline"
                         isResizable={true}/>
             </Table>
         );
@@ -64,7 +71,8 @@ export default class HarEntryList extends React.Component {
 
     _readKey(key, entry) {
         var keyMap = {
-            url: 'request.url'
+            url: 'request.url',
+            time: 'time.start'
         };
 
         key = keyMap[key] || key;
@@ -84,6 +92,26 @@ export default class HarEntryList extends React.Component {
         this.setState({columnWidths: columnWidths, isColumnResizing: false});
     }
 
+
+    _renderUrlColumn(cellData, cellDataKey, rowData, rowIndex, columnData, width) {
+        return (<FileType url={rowData.request.url} type={rowData.type}/>);
+    }
+
+    _renderTimeColumn(cellData, cellDataKey, rowData, rowIndex, columnData, width) {
+        var start = rowData.time.start,
+            total = rowData.time.total,
+            pgTimings = this.props.page.pageTimings;
+
+        return (
+            <TimeBar scale={this.props.timeScale}
+                     start={start}
+                     total={total}
+                     domContentLoad={pgTimings.onContentLoad}
+                     pageLoad={pgTimings.onLoad}
+                />
+        );
+    }
+
     //-----------------------------------------
     //              Table Sorting
     //-----------------------------------------
@@ -96,10 +124,11 @@ export default class HarEntryList extends React.Component {
             sortClass = dir ? classMap[dir] : '';
 
         return (
-            <div>
-                <a onClick={this._columnClicked.bind(this, dataKey)}>{label}</a>
+            <div className="text-primary sortable"
+                 onClick={this._columnClicked.bind(this, dataKey)}>
+                <strong>{label}</strong>
                 &nbsp;
-                <i className={'text-primary ' + sortClass}></i>
+                <i className={sortClass}></i>
             </div>
         );
     }
@@ -113,7 +142,7 @@ export default class HarEntryList extends React.Component {
         else if (dir === 'desc') {dir = null; }
 
         // Reset all sorts
-        _.each(_.keys(sortDirections), function(x){
+        _.each(_.keys(sortDirections), function (x) {
             sortDirections[x] = null;
         });
 
@@ -148,10 +177,14 @@ export default class HarEntryList extends React.Component {
 
 HarEntryList.defaultProps = {
     entries: [],
-    onColumnSort: null
+    page: null,
+    onColumnSort: null,
+    timeScale: null
 };
 
 HarEntryList.propTypes = {
     entries: PropTypes.array,
-    onColumnSort: PropTypes.func
+    page: PropTypes.object,
+    onColumnSort: PropTypes.func,
+    timeScale: PropTypes.func
 };

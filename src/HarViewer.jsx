@@ -1,12 +1,13 @@
 import React from 'react';
 import {Grid, Row, Col} from 'react-bootstrap';
 import _ from 'lodash';
+import d3 from 'd3';
 
 import harParser from './core/har-parser.js'
 import sampleHar from './stackoverflow.com.json'
 
 import PageList from './PageList.jsx';
-import HarEntryList from './HarEntryList.jsx';
+import HarEntryList from './har-entry-list/HarEntryList.jsx';
 import FilterBar from './FilterBar.jsx';
 
 export default class HarViewer extends React.Component {
@@ -24,11 +25,13 @@ export default class HarViewer extends React.Component {
         "use strict";
 
         var pages = harParser.parse(sampleHar),
-            filteredEntries = this._filterEntriesByType(this.state.filterType, pages[0].entries),
+            currentPage = pages[0],
+            timeScale = this._prepareScale(currentPage.entries, currentPage),
+            filteredEntries = this._filterEntriesByType(this.state.filterType, currentPage.entries),
             sortedEntries = this._sortEntriesByKey(this.state.sortKey, this.state.sortDirection, filteredEntries);
 
         return (
-            <Grid>
+            <Grid fluid>
                 <Row>
                     <Col sm={12}>
                         <h1>Har Analyzer</h1>
@@ -39,6 +42,8 @@ export default class HarViewer extends React.Component {
                 <Row>
                     <Col sm={12}>
                         <HarEntryList entries={sortedEntries}
+                                      page={currentPage}
+                                      timeScale={timeScale}
                                       onColumnSort={this._onColumnSort.bind(this)}/>
                     </Col>
                 </Row>
@@ -54,7 +59,8 @@ export default class HarViewer extends React.Component {
         if (_.isEmpty(dataKey) || _.isEmpty(sortDirection)) return entries;
 
         var keyMap = {
-            url: 'request.url'
+            url: 'request.url',
+            time: 'time.start'
         };
         var getValue = function (entry) {
             var key = keyMap[dataKey] || dataKey;
@@ -81,4 +87,16 @@ export default class HarViewer extends React.Component {
         });
     }
 
+    _prepareScale(entries, page) {
+        var startTime = 0,
+            lastEntry = _.last(entries),
+            endTime = lastEntry.time.start + lastEntry.time.total,
+            maxTime = Math.max(endTime, page.pageTimings.onLoad);
+
+        var scale = d3.scale.linear()
+            .domain([startTime, Math.ceil(maxTime)])
+            .range([0, 100]);
+
+        return scale;
+    }
 };

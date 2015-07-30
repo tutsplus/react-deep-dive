@@ -1,6 +1,7 @@
 var _ = require('lodash');
 
-import {Page, Entry} from './har-types.js'
+import Page from './Page.js'
+import Entry from './Entry.js'
 
 export default {
 
