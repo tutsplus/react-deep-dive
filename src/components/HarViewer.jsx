@@ -6,7 +6,6 @@ import d3 from 'd3';
 import harParser from '../core/har-parser.js'
 import sampleHar from '../store/stackoverflow.com.json'
 
-import PageList from './PageList.jsx';
 import HarEntryList from './har-entry-list/HarEntryList.jsx';
 import FilterBar from './FilterBar.jsx';
 
@@ -18,7 +17,7 @@ export default class HarViewer extends React.Component {
     constructor() {
         super();
         this.state = {
-            activeHar: null,
+            activeHar: HarStore.getState().activeHar,
             filterType: 'all',
             filterText: '',
             sortKey: null,
@@ -53,7 +52,6 @@ export default class HarViewer extends React.Component {
                 <Row>
                     <Col sm={12}>
                         <PageHeader>Har Viewer</PageHeader>
-                        <PageList pages={pages}/>
                     </Col>
                 </Row>
 
