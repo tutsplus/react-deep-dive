@@ -6,6 +6,8 @@ import React from 'react';
 import FixedDataTable from 'fixed-data-table';
 import TimeBar from '../timebar/TimeBar.jsx';
 import FileType from '../file-type/FileType.jsx';
+import formatter from '../../core/formatter';
+import {OverlayTrigger, Popover, Tooltip, Button} from 'react-bootstrap';
 
 const Table = FixedDataTable.Table;
 const Column = FixedDataTable.Column;
@@ -18,6 +20,7 @@ export default class HarEntryList extends React.Component {
         super();
 
         this.state = {
+            highlightRow: -1,
             columnWidths: {
                 url: 500,
                 size: 100,
@@ -29,6 +32,7 @@ export default class HarEntryList extends React.Component {
                 time: null
             },
             tableWidth: 1000,
+            tableHeight: 500,
             isColumnResizing: false
         };
     }
@@ -39,9 +43,10 @@ export default class HarEntryList extends React.Component {
             <Table rowsCount={this.props.entries.length}
                    width={this.state.tableWidth}
                    headerHeight={30}
-                   height={500}
+                   height={this.state.tableHeight}
                    rowHeight={30}
                    rowGetter={this._getEntry.bind(this)}
+                   rowClassNameGetter={this._getRowClasses.bind(this)}
                    isColumnResizing={this.state.isColumnResizing}
                    onColumnResizeEndCallback={this._onColumnResized.bind(this)}>
                 <Column dataKey="url"
@@ -54,6 +59,7 @@ export default class HarEntryList extends React.Component {
                         flexGrow={null}/>
                 <Column dataKey="size"
                         headerRenderer={this._renderHeader.bind(this)}
+                        cellRenderer={this._renderSizeColumn.bind(this)}
                         width={this.state.columnWidths.size}
                         minWidth={200}
                         label="Size"
@@ -67,6 +73,12 @@ export default class HarEntryList extends React.Component {
                         isResizable={true}/>
             </Table>
         );
+    }
+
+    _getRowClasses(index) {
+        var classname = (index === this.state.highlightRow) ? 'active' : '';
+
+        return classname;
     }
 
     _readKey(key, entry) {
@@ -93,6 +105,10 @@ export default class HarEntryList extends React.Component {
     }
 
 
+    _renderSizeColumn(cellData, cellDataKey, rowData, rowIndex, columnData, width) {
+        return (<span>{formatter.fileSize(cellData)}</span>);
+    }
+
     _renderUrlColumn(cellData, cellDataKey, rowData, rowIndex, columnData, width) {
         return (<FileType url={rowData.request.url} type={rowData.type}/>);
     }
@@ -106,9 +122,10 @@ export default class HarEntryList extends React.Component {
             <TimeBar scale={this.props.timeScale}
                      start={start}
                      total={total}
+                     timings={rowData.time.details}
                      domContentLoad={pgTimings.onContentLoad}
                      pageLoad={pgTimings.onLoad}
-                />
+            />
         );
     }
 
@@ -164,13 +181,16 @@ export default class HarEntryList extends React.Component {
 
     _onResize() {
         clearTimeout(this._updateSizeTimer);
-        this._updateSizeTimer = setTimeout(this._updateSize.bind(this), 16);
+        this._updateSizeTimer = setTimeout(this._updateSize.bind(this), 50);
     }
 
     _updateSize() {
         var parent = React.findDOMNode(this).parentNode;
 
-        this.setState({tableWidth: parent.clientWidth - GutterWidth});
+        this.setState({
+            tableWidth: parent.clientWidth - GutterWidth,
+            tableHeight: document.body.clientHeight - parent.offsetTop - GutterWidth*0.5
+        });
     }
 
 };

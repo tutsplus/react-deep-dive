@@ -11,7 +11,7 @@ export default class PageList extends React.Component {
         });
 
         return (
-            <ButtonToolbar>
+            <ButtonToolbar className="page-list">
                 {items}
             </ButtonToolbar>
         );

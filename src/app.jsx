@@ -3,7 +3,7 @@ require('bootstrap/dist/css/bootstrap-theme.css');
 
 require('./app.scss');
 
-import HarViewer from './HarViewer.jsx';
+import HarViewer from './components/HarViewer.jsx';
 import React from 'react';
 
 React.render(

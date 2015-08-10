@@ -22,7 +22,8 @@ $bar-height: 15px;
         height: 100%;
     }
     .timebar-mark-time {
-        background: linear-gradient($timebar-color, darken($timebar-color, 10%));
+        background: linear-gradient($timebar-color, darken($timebar-color, 20%));
+        border: 1px solid darken($timebar-color, 20%);
     }
 
     .timebar-mark-contentLoad {
@@ -37,4 +38,9 @@ $bar-height: 15px;
         background: blue;
         width: 1px;
     }
+}
+
+.timing-details tbody > .timing-group > td {
+    padding: 2px 5px;
+    border-top: none;
 }
