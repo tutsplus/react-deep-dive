@@ -1,11 +1,12 @@
 import alt from './alt';
 import HarActions from './HarActions';
 
+
 class HarStore {
 
     constructor() {
         this.bindListeners({
-            loadHar: HarActions.loadHar
+            loadSampleHar: HarActions.loadSampleHar
         });
 
         this.state = {
@@ -14,9 +15,10 @@ class HarStore {
         };
     }
 
-    loadHar(json) {
+    loadSampleHar(json) {
         this.setState({
-            hars: this.state.hars.concat(json)
+            hars: this.state.hars.concat(json),
+            activeHar: json
         });
     }
 }

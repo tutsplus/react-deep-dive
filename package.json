@@ -8,6 +8,7 @@
     "css-loader": "^0.15.2",
     "file-loader": "^0.8.4",
     "html-webpack-plugin": "^1.6.0",
+    "local-web-server": "^0.5.21",
     "node-libs-browser": "^0.5.2",
     "node-sass": "^3.2.0",
     "sass-loader": "^1.0.2",
@@ -18,7 +19,8 @@
   },
   "scripts": {
     "build": "webpack",
-    "dev": "webpack-dev-server --hot --inline --colors --progress"
+    "dev": "webpack-dev-server --hot --inline --colors --progress",
+    "server": "ws -p 8081 -d ./src/store"
   },
   "dependencies": {
     "alt": "^0.17.1",

@@ -18,6 +18,7 @@ export default class HarViewer extends React.Component {
     constructor() {
         super();
         this.state = {
+            activeHar: null,
             filterType: 'all',
             filterText: '',
             sortKey: null,
@@ -28,7 +29,16 @@ export default class HarViewer extends React.Component {
     render() {
         "use strict";
 
-        var pages = harParser.parse(sampleHar),
+        if (this.state.activeHar) {
+            return this._renderViewer(this.state.activeHar);
+        }
+        else {
+            return (<strong>No HAR loaded</strong>);
+        }
+    }
+
+    _renderViewer(har) {
+        var pages = harParser.parse(har),
             currentPage = pages[0],
             timeScale = this._prepareScale(currentPage.entries, currentPage),
             filter = {
@@ -66,12 +76,19 @@ export default class HarViewer extends React.Component {
     }
 
     componentDidMount() {
-        HarStore.listen(this._onStoreChanged.bind(this));
-        HarActions.loadHar(sampleHar);
+        this._storeListener = this._onStoreChanged.bind(this);
+        HarStore.listen(this._storeListener);
+        HarActions.loadSampleHar();
+    }
+
+    componentWillUnmount() {
+        HarStore.unlisten(this._storeListener);
     }
 
     _onStoreChanged(state) {
-
+        this.setState({
+            activeHar: state.activeHar
+        });
     }
 
     _onFilterTextChanged(text) {
