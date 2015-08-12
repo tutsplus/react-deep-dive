@@ -6,7 +6,7 @@ class HarStore {
 
     constructor() {
         this.bindListeners({
-            loadSampleHar: HarActions.loadSampleHar,
+            loadUrl: HarActions.loadUrl,
             loadHar: HarActions.loadHar
         });
 
@@ -16,7 +16,7 @@ class HarStore {
         };
     }
 
-    loadSampleHar(json) {
+    loadUrl(json) {
         this._setState(json);
     }
 

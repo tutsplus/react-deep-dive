@@ -55,36 +55,40 @@ export default class TypePieChart extends React.Component {
 
 
         // Pie slices
-        var paths = parent.selectAll('path')
+        var path = parent.selectAll('path')
             .data(data, keyFn);
-        paths
+        path
             .enter()
             .append('path');
 
-        paths
-            .attr('d', function (d) {
-                var data = arc(d);
-
-                console.log(data);
-                return data;
-            })
+        path
+            .attr('d', arc)
             .style('fill', function (d) {
                 return mimeTypes.types[d.data.type].color;
-            });
+            })
+        .style('fill-opacity', 0)
+        .transition()
+        .duration(500)
+        .style('fill-opacity', 1);
 
-        paths.exit()
+        path.exit()
+            .transition()
+            .duration(500)
+            .style('fill-opacity', 0)
             .remove();
 
         // Labels
-        var labels = parent.selectAll('text')
+        var text = parent.selectAll('text')
             .data(data, keyFn);
-        labels
+        text
             .enter()
             .append("text")
             .attr('dy', '0.5em')
             .style('font-size', '0.7em')
 
-        labels
+        text
+            .transition()
+            .duration(500)
             .attr("transform", (d) => {
                 var angle = (d.startAngle + d.endAngle) / 2,
                     degrees = displayAngle(angle);
@@ -107,7 +111,10 @@ export default class TypePieChart extends React.Component {
                 return `${label} (${d.data.count})`;
             });
 
-        labels.exit()
+        text.exit()
+            .transition()
+            .duration(500)
+            .style('fill-opacity', 0)
             .remove();
 
 

@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "dev": "webpack-dev-server --hot --inline --colors --progress",
+    "dev": "webpack-dev-server --inline --colors --progress",
     "server": "ws -p 8081 -d ./src/store"
   },
   "dependencies": {

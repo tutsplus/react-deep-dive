@@ -1,13 +1,8 @@
 import alt from './alt';
-import constants from '../core/constants'
 
 class HarActions {
 
-    loadSampleHar() {
-        this.actions.loadHar(constants.samples.nyt);
-    }
-
-    loadHar(url) {
+    loadUrl(url) {
         fetch(url)
             .then((response) => {
                 return response.json();
@@ -15,6 +10,10 @@ class HarActions {
             .then((data) => {
                 this.dispatch(data)
             });
+    }
+
+    loadHar(har) {
+        this.dispatch(har);
     }
 }
 

@@ -3,11 +3,12 @@ var path = require('path'),
 
 module.exports = {
     entry: {
-        app: ['./src/app.jsx']
+        app: ['./src/app.jsx'],
+        samples: ['./src/samples.js']
     },
     output: {
         path: './build',
-        filename: 'app.bundle.js'
+        filename: '[name].bundle.js'
     },
 
     module: {
@@ -45,6 +46,7 @@ module.exports = {
         })
     ],
 
+    debug: true,
     devtool: 'source-map'
 
 };

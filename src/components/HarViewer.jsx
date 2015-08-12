@@ -4,12 +4,11 @@ import _ from 'lodash';
 import d3 from 'd3';
 
 import harParser from '../core/har-parser.js'
-import sampleHar from '../store/stackoverflow.com.json'
-import constants from '../core/constants';
 
 import HarEntryList from './har-entry-list/HarEntryList.jsx';
 import FilterBar from './FilterBar.jsx';
 import TypePieChart from './TypePieChart.jsx';
+import SampleSelector from './SampleSelector.jsx';
 
 import HarActions from '../store/HarActions';
 import HarStore from '../store/HarStore';
@@ -56,11 +55,7 @@ export default class HarViewer extends React.Component {
                         <PageHeader>Har Viewer</PageHeader>
                     </Col>
                     <Col sm={3} smOffset={9}>
-                        <label className="control-label">HAR File</label>
-                        <select ref="harFile" className="form-control" onChange={this._harFileChanged.bind(this)}>
-                            <option value="nyt">NYTimes</option>
-                            <option value="so">StackOverflow</option>
-                        </select>
+                        <SampleSelector onSampleChanged={this._sampleChanged.bind(this)}/>
                     </Col>
                 </Row>
 
@@ -92,18 +87,16 @@ export default class HarViewer extends React.Component {
         this._storeListener = this._onStoreChanged.bind(this);
         HarStore.listen(this._storeListener);
 
-        HarActions.loadSampleHar();
+        var har = _.first(window.samples).har;
+        this._sampleChanged(har);
     }
 
     componentWillUnmount() {
         HarStore.unlisten(this._storeListener);
     }
 
-    _harFileChanged() {
-        var type = this.refs.harFile.getDOMNode().value,
-            url = constants.samples[type];
-
-        HarActions.loadHar(url);
+    _sampleChanged(har) {
+        HarActions.loadHar(har);
     }
 
     _onStoreChanged(state) {
