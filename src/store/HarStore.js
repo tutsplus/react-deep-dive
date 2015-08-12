@@ -6,7 +6,8 @@ class HarStore {
 
     constructor() {
         this.bindListeners({
-            loadSampleHar: HarActions.loadSampleHar
+            loadSampleHar: HarActions.loadSampleHar,
+            loadHar: HarActions.loadHar
         });
 
         this.state = {
@@ -16,6 +17,14 @@ class HarStore {
     }
 
     loadSampleHar(json) {
+        this._setState(json);
+    }
+
+    loadHar(json) {
+        this._setState(json);
+    }
+
+    _setState(json) {
         this.setState({
             hars: this.state.hars.concat(json),
             activeHar: json

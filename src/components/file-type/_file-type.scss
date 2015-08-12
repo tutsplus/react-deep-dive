@@ -29,6 +29,9 @@
         &.js {
             @include type(#99993b);
         }
+        &.json {
+            @include type(#558f99);
+        }
         &.image {
             @include type(#866399);
         }

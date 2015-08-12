@@ -4,17 +4,17 @@ import constants from '../core/constants'
 class HarActions {
 
     loadSampleHar() {
-        fetch(constants.sampleHarUrl)
+        this.actions.loadHar(constants.samples.nyt);
+    }
+
+    loadHar(url) {
+        fetch(url)
             .then((response) => {
                 return response.json();
             })
             .then((data) => {
                 this.dispatch(data)
             });
-    }
-
-    loadHarUrl(url) {
-        this.dispatch(url);
     }
 }
 
