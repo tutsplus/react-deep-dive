@@ -7,7 +7,7 @@ import harParser from '../core/har-parser.js'
 
 import HarEntryList from './har-entry-list/HarEntryList.jsx';
 import FilterBar from './FilterBar.jsx';
-import TypePieChart from './TypePieChart.jsx';
+import TypePieChart from './pie-chart/TypePieChart.jsx';
 import SampleSelector from './SampleSelector.jsx';
 
 import HarActions from '../store/HarActions';
