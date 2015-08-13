@@ -1,5 +1,5 @@
 require('fixed-data-table/dist/fixed-data-table.css');
-require('./_har-entry-list.scss');
+require('./_har-entry-table.scss');
 
 import _ from 'lodash';
 import React from 'react';
@@ -14,7 +14,7 @@ const Column = FixedDataTable.Column;
 const GutterWidth = 30;
 const PropTypes = React.PropTypes;
 
-export default class HarEntryList extends React.Component {
+export default class HarEntryTable extends React.Component {
 
     constructor() {
         super();
@@ -195,14 +195,14 @@ export default class HarEntryList extends React.Component {
 
 };
 
-HarEntryList.defaultProps = {
+HarEntryTable.defaultProps = {
     entries: [],
     page: null,
     onColumnSort: null,
     timeScale: null
 };
 
-HarEntryList.propTypes = {
+HarEntryTable.propTypes = {
     entries: PropTypes.array,
     page: PropTypes.object,
     onColumnSort: PropTypes.func,

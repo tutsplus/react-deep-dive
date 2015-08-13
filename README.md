@@ -9,7 +9,14 @@
 - Overview of the project
 
 #### Warm up
-- ES6 speed tour (link to different video)
+- ES6 speed tour
+    + Destructuring
+    + Template Strings
+    + Object literals
+    + Classes
+    + Modules import/export
+    + Arrow functions
+    + Babel as our transpiler
 - Virtual DOM (Browser DOM is an endpoint, just like Native UI, Canvas, SVG, etc)
 - Webpack
 

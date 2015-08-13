@@ -11,7 +11,7 @@ export default class SampleSelector extends React.Component {
     }
 
     render() {
-        var samples = _.map(window.samples, (s)=> {
+        var sampleOptions = _.map(window.samples, (s)=> {
             return (<option value={s.id} key={s.id}>{s.label}</option>);
         });
 
@@ -19,7 +19,7 @@ export default class SampleSelector extends React.Component {
             <div>
                 <label className="control-label">HAR File</label>
                 <select ref="selector" className="form-control" onChange={this._sampleChanged.bind(this)}>
-                    {samples}
+                    {sampleOptions}
                 </select>
             </div>
         );

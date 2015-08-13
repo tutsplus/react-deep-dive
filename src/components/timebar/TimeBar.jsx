@@ -52,11 +52,14 @@ export default class TimeBar extends React.Component {
                 return (<div key={b.type} className={`timebar-mark ${b.className}`} style={b.style}></div>);
             })
             .value();
-        var overlay = (<Popover title={`Timing Details, started at: ${formatter.time(this.props.start)}`}>
-            <TimingDetails timings={this.props.timings}
-                           start={this.props.start}
-                           total={this.props.total}/>
-        </Popover>);
+
+        var overlay = (
+            <Popover title={`Timing Details, started at: ${formatter.time(this.props.start)}`}>
+                <TimingDetails timings={this.props.timings}
+                               start={this.props.start}
+                               total={this.props.total}/>
+            </Popover>
+        );
 
 
         return (

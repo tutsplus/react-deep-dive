@@ -42,11 +42,10 @@ module.exports = {
 
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'React Deep-Dive'
+            title: 'HAR Viewer (React Deep-Dive)'
         })
     ],
 
-    debug: true,
     devtool: 'source-map'
 
 };

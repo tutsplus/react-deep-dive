@@ -5,7 +5,7 @@ import d3 from 'd3';
 
 import harParser from '../core/har-parser.js'
 
-import HarEntryList from './har-entry-list/HarEntryList.jsx';
+import HarEntryTable from './har-entry-table/HarEntryTable.jsx';
 import FilterBar from './FilterBar.jsx';
 import TypePieChart from './pie-chart/TypePieChart.jsx';
 import SampleSelector from './SampleSelector.jsx';
@@ -73,10 +73,10 @@ export default class HarViewer extends React.Component {
                 </Row>
                 <Row>
                     <Col sm={12}>
-                        <HarEntryList entries={sortedEntries}
-                                      page={currentPage}
-                                      timeScale={timeScale}
-                                      onColumnSort={this._onColumnSort.bind(this)}/>
+                        <HarEntryTable entries={sortedEntries}
+                                       page={currentPage}
+                                       timeScale={timeScale}
+                                       onColumnSort={this._onColumnSort.bind(this)}/>
                     </Col>
                 </Row>
             </Grid>
