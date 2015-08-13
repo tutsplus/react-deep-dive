@@ -1,5 +1,5 @@
 import React from 'react';
-import {Grid, Row, Col, PageHeader} from 'react-bootstrap';
+import {Grid, Row, Col, PageHeader, Alert} from 'react-bootstrap';
 import _ from 'lodash';
 import d3 from 'd3';
 
@@ -29,12 +29,46 @@ export default class HarViewer extends React.Component {
     render() {
         "use strict";
 
-        if (this.state.activeHar) {
-            return this._renderViewer(this.state.activeHar);
-        }
-        else {
-            return (<strong>No HAR loaded</strong>);
-        }
+        var content = this.state.activeHar
+            ? this._renderViewer(this.state.activeHar)
+            : this._renderEmptyViewer();
+
+        return (
+            <div>
+                {this._renderHeader()}
+                {content}
+            </div>
+        );
+    }
+
+    _renderEmptyViewer() {
+        return (
+            <Grid fluid>
+                <Row>
+                    <Col sm={12}>
+                        <p></p>
+                        <Alert bsStyle="warning">
+                            <strong>No HAR loaded</strong>
+                        </Alert>
+                    </Col>
+                </Row>
+            </Grid>
+        );
+    }
+
+    _renderHeader() {
+        return (
+            <Grid fluid>
+                <Row>
+                    <Col sm={12}>
+                        <PageHeader>Har Viewer</PageHeader>
+                    </Col>
+                    <Col sm={3} smOffset={9}>
+                        <SampleSelector onSampleChanged={this._sampleChanged.bind(this)}/>
+                    </Col>
+                </Row>
+            </Grid>
+        );
     }
 
     _renderViewer(har) {
@@ -50,15 +84,6 @@ export default class HarViewer extends React.Component {
 
         return (
             <Grid fluid>
-                <Row>
-                    <Col sm={12}>
-                        <PageHeader>Har Viewer</PageHeader>
-                    </Col>
-                    <Col sm={3} smOffset={9}>
-                        <SampleSelector onSampleChanged={this._sampleChanged.bind(this)}/>
-                    </Col>
-                </Row>
-
                 <Row>
                     <Col sm={12}>
                         <TypePieChart entries={currentPage.entries}/>
@@ -86,9 +111,6 @@ export default class HarViewer extends React.Component {
     componentDidMount() {
         this._storeListener = this._onStoreChanged.bind(this);
         HarStore.listen(this._storeListener);
-
-        var har = _.first(window.samples).har;
-        this._sampleChanged(har);
     }
 
     componentWillUnmount() {

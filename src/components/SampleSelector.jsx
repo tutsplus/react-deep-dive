@@ -19,6 +19,7 @@ export default class SampleSelector extends React.Component {
             <div>
                 <label className="control-label">HAR File</label>
                 <select ref="selector" className="form-control" onChange={this._sampleChanged.bind(this)}>
+                    <option value="">---</option>
                     {sampleOptions}
                 </select>
             </div>
@@ -27,7 +28,9 @@ export default class SampleSelector extends React.Component {
 
     _sampleChanged() {
         var type = this.refs.selector.getDOMNode().value,
-            har = _.find(window.samples, (x)=>x.id === type).har;
+            har = type
+                ? _.find(window.samples, (x)=>x.id === type).har
+                : null;
 
         if (this.props.onSampleChanged) {
             this.props.onSampleChanged(har);
