@@ -3,10 +3,7 @@ require('bootstrap/dist/css/bootstrap-theme.css');
 
 require('./app.scss');
 
-import HarViewer from './components/HarViewer.jsx';
-import React from 'react';
-
 React.render(
-    <HarViewer />,
+    <h1>React Deep Dive</h1>,
     document.body
 );
