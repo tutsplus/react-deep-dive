@@ -1,10 +1,8 @@
-var path = require('path'),
-    HtmlWebpackPlugin = require('html-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: {
-        app: ['./src/app.jsx'],
-        samples: ['./src/samples.js']
+        app: ['./src/app.jsx']
     },
     output: {
         path: './build',
