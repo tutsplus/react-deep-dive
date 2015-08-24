@@ -1,8 +1,11 @@
 require('./app.scss');
+//import HelloComponent from './tour';
+import {HelloComponent} from './tour';
 
 import React from 'react';
 
+
 React.render(
-    <h1>React Deep Dive</h1>,
+    <HelloComponent />,
     document.body
 );
