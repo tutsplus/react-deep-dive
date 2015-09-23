@@ -2,8 +2,10 @@ require('fixed-data-table/dist/fixed-data-table.css');
 
 import React from 'react';
 import _ from 'lodash';
-import {Grid, Row, Col, PageHeader, Button, ButtonGroup, Input} from 'react-bootstrap';
-import mimeTypes from '../core/mimeTypes.js';
+import {Grid, Row, Col, PageHeader, Button, ButtonGroup, Input, Alert} from 'react-bootstrap';
+import mimeTypes from '../core/mime-types';
+import harParser from '../core/har-parser';
+import HarEntryTable from './HarEntryTable.jsx';
 
 import FixedDataTable from 'fixed-data-table';
 const Table = FixedDataTable.Table;
@@ -15,26 +17,61 @@ export default class HarViewer extends React.Component {
     constructor() {
         super();
 
-        this.state = {
-            isColumnResizing: false,
-            columnWidths: {
-                url: 500,
-                size: 100,
-                time: 200
-            },
-            tableWidth: 1000,
-            tableHeight: 500
+        this.state = this._initialState();
+    }
+
+    _initialState() {
+        return {
+            activeHar: null,
+            entries: [],
+            sortKey: null,
+            sortDirection: null
         };
     }
 
     render() {
+        "use strict";
 
+        var content = this.state.activeHar
+            ? this._renderViewer(this.state.activeHar)
+            : this._renderEmptyViewer();
+
+        return (
+            <div>
+                {this._renderHeader()}
+                {content}
+            </div>
+        );
+    }
+
+    _renderViewer(har) {
+        var pages = harParser.parse(har),
+            currentPage = pages[0],
+            sortedEntries = this._sortEntriesByKey(this.state.sortKey, this.state.sortDirection, currentPage.entries);
+
+        return (
+            <Grid fluid>
+                <Row>
+                    <Col sm={12}>
+                        <HarEntryTable entries={sortedEntries}
+                                       onColumnSort={this._onColumnSort.bind(this)}/>
+                    </Col>
+                </Row>
+            </Grid>
+        );
+    }
+
+    _renderHeader() {
         var buttons = _.map(_.keys(mimeTypes.types), (x) => {
             return this._createButton(x, mimeTypes.types[x].label);
         });
 
+        var options = _.map(window.samples, (s) => {
+            return (<option key={s.id} value={s.id}>{s.label}</option>);
+        });
+
         return (
-            <Grid>
+            <Grid fluid>
                 <Row>
                     <Col sm={12}>
                         <PageHeader>Har Viewer</PageHeader>
@@ -43,8 +80,9 @@ export default class HarViewer extends React.Component {
                     <Col sm={3} smOffset={9}>
                         <div>
                             <label className="control-label"></label>
-                            <select className="form-control" onChange={this._sampleChanged.bind(this)}>
+                            <select ref="selector" className="form-control" onChange={this._sampleChanged.bind(this)}>
                                 <option value="">---</option>
+                                {options}
                             </select>
                         </div>
                     </Col>
@@ -72,70 +110,40 @@ export default class HarViewer extends React.Component {
                                ref="filterText"/>
                     </Col>
                 </Row>
+            </Grid>
+        );
 
+
+    }
+
+    _renderEmptyViewer() {
+        return (
+            <Grid fluid>
                 <Row>
                     <Col sm={12}>
-                        <Table ref="entriesTable"
-                               rowsCount={this.props.entries.length}
-                               width={this.state.tableWidth}
-                               headerHeight={30}
-                               height={this.state.tableHeight}
-                               rowHeight={30}
-                               rowGetter={this._getEntry.bind(this)}
-                               isColumnResizing={this.state.isColumnResizing}
-                               onColumnResizeEndCallback={this._onColumnResized.bind(this)}>
-                            <Column dataKey="url"
-                                    width={this.state.columnWidths.url}
-                                    isResizable={true}
-                                    label="Url"
-                                    flexGrow={null}/>
-                            <Column dataKey="size"
-                                    width={this.state.columnWidths.size}
-                                    isResizable={true}
-                                    label="Size"/>
-                            <Column dataKey="time"
-                                    width={this.state.columnWidths.time}
-                                    minWidth={200}
-                                    isResizable={true}
-                                    label="Timeline"/>
-                        </Table>
+                        <p></p>
+                        <Alert bsStyle="warning">
+                            <strong>No HAR loaded</strong>
+                        </Alert>
                     </Col>
                 </Row>
             </Grid>
         );
     }
 
-    _getEntry(index) {
-        return this.props.entries[index];
-    }
-
-    _onColumnResized(newColumnWidth, dataKey) {
-        var columnWidths = this.state.columnWidths;
-        columnWidths[dataKey] = newColumnWidth;
-
-        this.setState({columnWidths: columnWidths, isColumnResizing: false});
-    }
 
     _sampleChanged() {
+        var selection = this.refs.selector.getDOMNode().value;
+        var har = selection
+            ? _.find(window.samples, s=>s.id === selection).har
+            : null;
 
-    }
-
-    //-----------------------------------------
-    //              Table Resizing
-    //-----------------------------------------
-    componentDidMount() {
-
-        window.addEventListener('resize', _.debounce(this._onResize.bind(this), 50, {leading: true, trailing: true}));
-        _.delay(this._onResize.bind(this), 50);
-    }
-
-    _onResize() {
-        var parent = this.refs.entriesTable.getDOMNode().parentNode;
-
-        this.setState({
-            tableWidth: parent.clientWidth - GutterWidth,
-            tableHeight: document.body.clientHeight - parent.offsetTop - GutterWidth * 0.5
-        });
+        if (har) {
+            this.setState({activeHar: har});
+        }
+        else {
+            this.setState(this._initialState()); // reset state
+        }
     }
 
     //-----------------------------------------
@@ -159,8 +167,32 @@ export default class HarViewer extends React.Component {
     _filterTextChanged() {
 
     }
-}
 
-HarViewer.defaultProps = {
-    entries: []
-};
+    //-----------------------------------------
+    //              Sorting
+    //-----------------------------------------
+    _onColumnSort(dataKey, direction) {
+        this.setState({sortKey: dataKey, sortDirection: direction});
+    }
+
+    _sortEntriesByKey(dataKey, sortDirection, entries) {
+        if (_.isEmpty(dataKey) || _.isEmpty(sortDirection)) return entries;
+
+        var keyMap = {
+            url: 'request.url',
+            time: 'time.start'
+        };
+        var getValue = function (entry) {
+            var key = keyMap[dataKey] || dataKey;
+            return _.get(entry, key);
+        };
+
+        var sorted = _.sortBy(entries, getValue); // By default _.sortBy is ascending
+        if (sortDirection === 'desc') {
+            sorted.reverse();
+        }
+
+        return sorted;
+    }
+
+}
