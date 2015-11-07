@@ -3,6 +3,8 @@ import _ from 'lodash';
 import {Grid, Row, Col, PageHeader, Button, ButtonGroup, Input, Alert} from 'react-bootstrap';
 import mimeTypes from '../core/mime-types.js';
 import HarEntryTable from './HarEntryTable.jsx';
+import FilterBar from './FilterBar.jsx';
+import SampleSelector from './SampleSelector.jsx';
 
 import harParser from '../core/har-parser.js';
 
@@ -17,6 +19,8 @@ export default class HarViewer extends React.Component {
     _initialState() {
         return {
             activeHar: null,
+            filterType: 'all',
+            filterText: null,
             sortKey: null,
             sortDirection: null
         };
@@ -57,31 +61,30 @@ export default class HarViewer extends React.Component {
         var pages = harParser.parse(har),
             currentPage = pages[0];
 
-        var entries = this._sortEntriesByKey(this.state.sortKey,
-            this.state.sortDirection,
-            currentPage.entries);
+        var filter = {
+                type: this.state.filterType,
+                text: this.state.filterText
+            },
+            filteredEntries = this._filterEntries(filter, currentPage.entries),
+            entries = this._sortEntriesByKey(this.state.sortKey, this.state.sortDirection, filteredEntries);
 
         return (
             <Grid fluid>
+                <FilterBar onChange={this._onFilterChanged.bind(this)}
+                           onFilterTextChange={this._onFilterTextChanged.bind(this)}></FilterBar>
+
                 <Row>
                     <Col sm={12}>
                         <HarEntryTable entries={entries}
                                        onColumnSort={this._onColumnSort.bind(this)}/>
                     </Col>
                 </Row>
+
             </Grid>
         );
     }
 
     _renderHeader() {
-        var buttons = _.map(_.keys(mimeTypes.types), (x) => {
-            return this._createButton(x, mimeTypes.types[x].label);
-        });
-
-        var options = _.map(window.samples, (s) => {
-            return (<option key={s.id} value={s.id}>{s.label}</option>);
-        });
-
         return (
             <Grid fluid>
                 <Row>
@@ -90,13 +93,7 @@ export default class HarViewer extends React.Component {
                     </Col>
 
                     <Col sm={3} smOffset={9}>
-                        <div>
-                            <label className="control-label"></label>
-                            <select ref="selector" className="form-control" onChange={this._sampleChanged.bind(this)}>
-                                <option value="">---</option>
-                                {options}
-                            </select>
-                        </div>
+                        <SampleSelector onSampleChanged={this._sampleChanged.bind(this)}></SampleSelector>
                     </Col>
                 </Row>
 
@@ -106,32 +103,11 @@ export default class HarViewer extends React.Component {
                     </Col>
                 </Row>
 
-                <Row>
-                    <Col sm={8}>
-                        <ButtonGroup bsSize="small">
-                            {this._createButton('all', 'All')}
-                            {buttons}
-                        </ButtonGroup>
-                    </Col>
-
-                    <Col sm={4}>
-                        <Input type="search"
-                               placeholder="Search Url"
-                               bsSize="small"
-                               onChange={this._filterTextChanged.bind(this)}
-                               ref="filterText"/>
-                    </Col>
-                </Row>
             </Grid>
         );
     }
 
-    _sampleChanged() {
-        var selection = this.refs.selector.getDOMNode().value;
-        var har = selection
-            ? _.find(window.samples, s=>s.id === selection).har
-            : null;
-
+    _sampleChanged(har) {
         if (har) {
             this.setState({activeHar: har});
         }
@@ -143,23 +119,21 @@ export default class HarViewer extends React.Component {
     //-----------------------------------------
     //              Filtering
     //-----------------------------------------
-    _createButton(type, label) {
-        var handler = this._filterRequested.bind(this, type);
-        return (
-            <Button key={type}
-                    bsStyle="primary"
-                    active={this.state.type === type}
-                    onClick={handler}>{label}
-            </Button>
-        );
+    _onFilterChanged(type) {
+        this.setState({filterType: type});
     }
 
-    _filterRequested(type, event) {
+    _onFilterTextChanged(text) {
+        this.setState({filterText: text});
     }
 
+    _filterEntries(filter, entries) {
+        return _.filter(entries, function (x) {
+            var matchesType = filter.type === 'all' || filter.type === x.type,
+                matchesText = _.includes(x.request.url, filter.text || '');
 
-    _filterTextChanged() {
-
+            return matchesType && matchesText;
+        });
     }
 
     //-----------------------------------------
