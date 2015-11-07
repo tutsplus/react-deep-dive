@@ -20,7 +20,7 @@ export default class HarViewer extends React.Component {
         return {
             activeHar: null,
             filterType: 'all',
-            filterText: '',
+            filterText: null,
             sortKey: null,
             sortDirection: null
         };
@@ -70,12 +70,8 @@ export default class HarViewer extends React.Component {
 
         return (
             <Grid fluid>
-                <Row>
-                    <Col sm={12}>
-                        <FilterBar onChange={this._onFilterChanged.bind(this)}
-                                   onFilterTextChange={this._onFilterTextChanged.bind(this)}/>
-                    </Col>
-                </Row>
+                <FilterBar onChange={this._onFilterChanged.bind(this)}
+                           onFilterTextChange={this._onFilterTextChanged.bind(this)}></FilterBar>
 
                 <Row>
                     <Col sm={12}>
@@ -83,15 +79,12 @@ export default class HarViewer extends React.Component {
                                        onColumnSort={this._onColumnSort.bind(this)}/>
                     </Col>
                 </Row>
+
             </Grid>
         );
     }
 
     _renderHeader() {
-        var options = _.map(window.samples, (s) => {
-            return (<option key={s.id} value={s.id}>{s.label}</option>);
-        });
-
         return (
             <Grid fluid>
                 <Row>
@@ -100,7 +93,7 @@ export default class HarViewer extends React.Component {
                     </Col>
 
                     <Col sm={3} smOffset={9}>
-                        <SampleSelector onSampleChanged={this._sampleChanged.bind(this)}/>
+                        <SampleSelector onSampleChanged={this._sampleChanged.bind(this)}></SampleSelector>
                     </Col>
                 </Row>
 
@@ -109,12 +102,12 @@ export default class HarViewer extends React.Component {
                         <p>Pie Chart</p>
                     </Col>
                 </Row>
+
             </Grid>
         );
     }
 
     _sampleChanged(har) {
-
         if (har) {
             this.setState({activeHar: har});
         }
@@ -130,17 +123,17 @@ export default class HarViewer extends React.Component {
         this.setState({filterType: type});
     }
 
+    _onFilterTextChanged(text) {
+        this.setState({filterText: text});
+    }
+
     _filterEntries(filter, entries) {
         return _.filter(entries, function (x) {
             var matchesType = filter.type === 'all' || filter.type === x.type,
-                matchesText = _.includes(x.request.url, filter.text);
+                matchesText = _.includes(x.request.url, filter.text || '');
 
             return matchesType && matchesText;
         });
-    }
-
-    _onFilterTextChanged(text) {
-        this.setState({filterText: text});
     }
 
     //-----------------------------------------

@@ -1,21 +1,22 @@
 import React from 'react';
-import {Button, ButtonGroup, Input, Row, Col} from 'react-bootstrap';
 import _ from 'lodash';
+import {Row, Col, Button, ButtonGroup, Input} from 'react-bootstrap';
+import mimeTypes from '../core/mime-types.js';
 
 const PropTypes = React.PropTypes;
-import mimeTypes from '../core/mime-types.js';
 
 export default class FilterBar extends React.Component {
 
     constructor() {
         super();
+
         this.state = {
             type: 'all'
         };
     }
 
     render() {
-        var buttons = _.map(_.keys(mimeTypes.types), (x)=> {
+        var buttons = _.map(_.keys(mimeTypes.types), (x) => {
             return this._createButton(x, mimeTypes.types[x].label);
         });
 
@@ -27,6 +28,7 @@ export default class FilterBar extends React.Component {
                         {buttons}
                     </ButtonGroup>
                 </Col>
+
                 <Col sm={4}>
                     <Input type="search"
                            placeholder="Search Url"
@@ -35,13 +37,8 @@ export default class FilterBar extends React.Component {
                            ref="filterText"/>
                 </Col>
             </Row>
-        );
-    }
 
-    _filterTextChanged() {
-        if (this.props.onFilterTextChange) {
-            this.props.onFilterTextChange(this.refs.filterText.getValue());
-        }
+        );
     }
 
     _createButton(type, label) {
@@ -56,12 +53,19 @@ export default class FilterBar extends React.Component {
     }
 
     _filterRequested(type, event) {
-        this.setState({type: type});
+        this.setState({ type: type});
+
         if (this.props.onChange) {
             this.props.onChange(type);
         }
     }
-};
+
+    _filterTextChanged() {
+        if (this.props.onFilterTextChange) {
+            this.props.onFilterTextChange(this.refs.filterText.getValue());
+        }
+    }
+}
 
 FilterBar.defaultProps = {
     onChange: null,
@@ -72,3 +76,4 @@ FilterBar.propTypes = {
     onChange: PropTypes.func,
     onFilterTextChange: PropTypes.func
 };
+

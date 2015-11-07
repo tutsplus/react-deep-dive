@@ -10,32 +10,32 @@ export default class SampleSelector extends React.Component {
     }
 
     render() {
-        var sampleOptions = _.map(window.samples, (s)=> {
-            return (<option value={s.id} key={s.id}>{s.label}</option>);
+        var options = _.map(window.samples, (s) => {
+            return (<option key={s.id} value={s.id}>{s.label}</option>);
         });
 
         return (
             <div>
-                <label className="control-label">HAR File</label>
+                <label className="control-label"></label>
                 <select ref="selector" className="form-control" onChange={this._sampleChanged.bind(this)}>
                     <option value="">---</option>
-                    {sampleOptions}
+                    {options}
                 </select>
             </div>
         );
     }
 
     _sampleChanged() {
-        var type = this.refs.selector.getDOMNode().value,
-            har = type
-                ? _.find(window.samples, (x)=>x.id === type).har
-                : null;
+        var selection = this.refs.selector.getDOMNode().value;
+        var har = selection
+            ? _.find(window.samples, s=>s.id === selection).har
+            : null;
 
         if (this.props.onSampleChanged) {
             this.props.onSampleChanged(har);
         }
     }
-};
+}
 
 SampleSelector.propTypes = {
     onSampleChanged: PropTypes.func
