@@ -1,0 +1,46 @@
+
+$timebar-color: #5ae666;
+$container-height: 30px;
+$bar-height: 15px;
+
+.timebar {
+    height: $bar-height;
+    position: relative;
+
+    .timebar-label {
+        font-size: 1rem;
+        z-index: 1;
+        position: relative;
+        top: -3px;
+        left: 3px;
+    }
+
+    .timebar-mark {
+        position: absolute;
+        top: 0;
+        background: linear-gradient(gray, darken(gray, 10%));
+        height: 100%;
+    }
+    .timebar-mark-time {
+        background: linear-gradient($timebar-color, darken($timebar-color, 20%));
+        border: 1px solid darken($timebar-color, 20%);
+    }
+
+    .timebar-mark-contentLoad {
+        top: -$bar-height/2;
+        height: $container-height;
+        background: red;
+        width: 1px;
+    }
+    .timebar-mark-pageLoad {
+        top: -$bar-height/2;
+        height: $container-height;
+        background: blue;
+        width: 1px;
+    }
+}
+
+.timing-details tbody > .timing-group > td {
+    padding: 2px 5px;
+    border-top: none;
+}

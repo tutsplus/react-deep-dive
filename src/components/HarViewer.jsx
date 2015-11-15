@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import {Grid, Row, Col, PageHeader, Button, ButtonGroup, Input, Alert} from 'react-bootstrap';
 import mimeTypes from '../core/mime-types.js';
-import HarEntryTable from './HarEntryTable.jsx';
+import HarEntryTable from './har-entry-table/HarEntryTable.jsx';
 import FilterBar from './FilterBar.jsx';
 import SampleSelector from './SampleSelector.jsx';
 
@@ -71,11 +71,13 @@ export default class HarViewer extends React.Component {
         return (
             <Grid fluid>
                 <FilterBar onChange={this._onFilterChanged.bind(this)}
-                           onFilterTextChange={this._onFilterTextChanged.bind(this)}></FilterBar>
+                           onFilterTextChange={this._onFilterTextChanged.bind(this)}>
+                </FilterBar>
 
                 <Row>
                     <Col sm={12}>
                         <HarEntryTable entries={entries}
+                                       page={currentPage}
                                        onColumnSort={this._onColumnSort.bind(this)}/>
                     </Col>
                 </Row>
@@ -162,6 +164,7 @@ export default class HarViewer extends React.Component {
 
         return sorted;
     }
+
 }
 
 HarViewer.defaultProps = {};
