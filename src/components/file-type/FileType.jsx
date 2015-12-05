@@ -25,4 +25,3 @@ FileType.defaultProps = {
     url: null,
     type: null
 };
-FileType.defaultProps = {};
