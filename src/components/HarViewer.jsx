@@ -5,6 +5,7 @@ import mimeTypes from '../core/mime-types.js';
 import HarEntryTable from './har-entry-table/HarEntryTable.jsx';
 import FilterBar from './FilterBar.jsx';
 import SampleSelector from './SampleSelector.jsx';
+import TypePieChart from './pie-chart/TypePieChart.jsx';
 
 import harParser from '../core/har-parser.js';
 
@@ -70,6 +71,14 @@ export default class HarViewer extends React.Component {
 
         return (
             <Grid fluid>
+                <Row>
+                    <Col sm={12}>
+                        <p>
+                            <TypePieChart entries={currentPage.entries}></TypePieChart>
+                        </p>
+                    </Col>
+                </Row>
+
                 <FilterBar onChange={this._onFilterChanged.bind(this)}
                            onFilterTextChange={this._onFilterTextChanged.bind(this)}>
                 </FilterBar>
@@ -96,12 +105,6 @@ export default class HarViewer extends React.Component {
 
                     <Col sm={3} smOffset={9}>
                         <SampleSelector onSampleChanged={this._sampleChanged.bind(this)}></SampleSelector>
-                    </Col>
-                </Row>
-
-                <Row>
-                    <Col sm={12}>
-                        <p>Pie Chart</p>
                     </Col>
                 </Row>
 
